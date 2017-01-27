@@ -1,16 +1,16 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib;
+namespace RonteLtd\OAuthClientLib;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Ronte\Messenger\OAuthClientLib\Exception\ClientNotFoundException;
-use Ronte\Messenger\OAuthClientLib\Exception\ClientException;
-use Ronte\Messenger\OAuthClientLib\Exception\WrongClientException;
-use Ronte\Messenger\OAuthClientLib\Model\Token;
+use RonteLtd\OAuthClientLib\Exception\ClientNotFoundException;
+use RonteLtd\OAuthClientLib\Exception\ClientException;
+use RonteLtd\OAuthClientLib\Exception\WrongClientException;
+use RonteLtd\OAuthClientLib\Model\Token;
 
 class CommonOAuthClientProvider implements OAuthClientProvider
 {

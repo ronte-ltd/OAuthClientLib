@@ -1,6 +1,6 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib;
+namespace RonteLtd\OAuthClientLib;
 
 class OAuthClientException extends \Exception
 {}

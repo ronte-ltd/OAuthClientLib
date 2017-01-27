@@ -1,8 +1,8 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Model;
+namespace RonteLtd\OAuthClientLib\Model;
 
-use Ronte\Messenger\OAuthClientLib\Provider\TimeProvider;
+use RonteLtd\OAuthClientLib\Provider\TimeProvider;
 
 class CommonToken implements Token
 {

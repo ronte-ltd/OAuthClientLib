@@ -1,9 +1,9 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Tests\Model;
+namespace RonteLtd\OAuthClientLib\Tests\Model;
 
-use Ronte\Messenger\OAuthClientLib\Model\CommonToken;
-use Ronte\Messenger\OAuthClientLib\Provider\TimeProvider;
+use RonteLtd\OAuthClientLib\Model\CommonToken;
+use RonteLtd\OAuthClientLib\Provider\TimeProvider;
 use PHPUnit\Framework\TestCase;
 
 class CommonTokenTest extends TestCase

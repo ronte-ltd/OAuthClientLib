@@ -1,11 +1,11 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Tests;
+namespace RonteLtd\OAuthClientLib\Tests;
 
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Request;
-use Ronte\Messenger\OAuthClientLib\InMemoryApiRequestStorage;
-use Ronte\Messenger\OAuthClientLib\Exception\RequestNotFoundException;
+use RonteLtd\OAuthClientLib\InMemoryApiRequestStorage;
+use RonteLtd\OAuthClientLib\Exception\RequestNotFoundException;
 
 class InMemoryApiRequestStorageTest extends TestCase
 {

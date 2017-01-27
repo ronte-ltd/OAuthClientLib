@@ -1,6 +1,6 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Model;
+namespace RonteLtd\OAuthClientLib\Model;
 
 interface Token
 {

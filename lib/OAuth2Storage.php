@@ -1,9 +1,9 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib;
+namespace RonteLtd\OAuthClientLib;
 
-use Ronte\Messenger\OAuthClientLib\Model\Token;
-use Ronte\Messenger\OAuthClientLib\Model\Client;
+use RonteLtd\OAuthClientLib\Model\Token;
+use RonteLtd\OAuthClientLib\Model\Client;
 
 interface OAuth2Storage
 {

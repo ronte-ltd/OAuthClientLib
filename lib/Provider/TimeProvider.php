@@ -1,6 +1,6 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Provider;
+namespace RonteLtd\OAuthClientLib\Provider;
 
 interface TimeProvider
 {

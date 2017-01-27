@@ -1,6 +1,6 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib;
+namespace RonteLtd\OAuthClientLib;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Client;

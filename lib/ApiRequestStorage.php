@@ -1,9 +1,9 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib;
+namespace RonteLtd\OAuthClientLib;
 
 use Psr\Http\Message\RequestInterface;
-use Ronte\Messenger\OAuthClientLib\Exception\RequestNotFoundException;
+use RonteLtd\OAuthClientLib\Exception\RequestNotFoundException;
 
 interface ApiRequestStorage
 {

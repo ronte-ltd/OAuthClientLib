@@ -1,6 +1,6 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Tests;
+namespace RonteLtd\OAuthClientLib\Tests;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
@@ -10,12 +10,12 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
-use Ronte\Messenger\OAuthClientLib\ApiRequestStorage;
-use Ronte\Messenger\OAuthClientLib\CommonOAuthClientProvider;
-use Ronte\Messenger\OAuthClientLib\HttpClientBuilder;
-use Ronte\Messenger\OAuthClientLib\Model\Client;
-use Ronte\Messenger\OAuthClientLib\Model\Token;
-use Ronte\Messenger\OAuthClientLib\OAuth2Storage;
+use RonteLtd\OAuthClientLib\ApiRequestStorage;
+use RonteLtd\OAuthClientLib\CommonOAuthClientProvider;
+use RonteLtd\OAuthClientLib\HttpClientBuilder;
+use RonteLtd\OAuthClientLib\Model\Client;
+use RonteLtd\OAuthClientLib\Model\Token;
+use RonteLtd\OAuthClientLib\OAuth2Storage;
 
 class CommonOAuthClientProviderTest extends TestCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Exception;
+namespace RonteLtd\OAuthClientLib\Exception;
 
-use Ronte\Messenger\OAuthClientLib\OAuthClientException;
+use RonteLtd\OAuthClientLib\OAuthClientException;
 
 class ClientNotFoundException extends OAuthClientException
 {}

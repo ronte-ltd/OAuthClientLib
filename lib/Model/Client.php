@@ -1,12 +1,12 @@
 <?php
 
-namespace Ronte\Messenger\OAuthClientLib\Model;
+namespace RonteLtd\OAuthClientLib\Model;
 
 interface Client
 {
     /**
      * Gets content type, accepted by auth service, ig json or form.
-     * Content type MUST be one of supported by \Ronte\Messenger\OAuthClientLib\CommonOAuthClientProvider!
+     * Content type MUST be one of supported by \RonteLtd\OAuthClientLib\CommonOAuthClientProvider!
      *
      * @return string Content type
      */
