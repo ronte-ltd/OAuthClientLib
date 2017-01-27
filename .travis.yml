@@ -8,4 +8,5 @@ install:
   - composer install
 
 script:
+  - composer validate
   - vendor/bin/phpunit
