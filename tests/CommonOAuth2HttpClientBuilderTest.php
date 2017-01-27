@@ -11,13 +11,13 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use RonteLtd\OAuthClientLib\ApiRequestStorage;
-use RonteLtd\OAuthClientLib\CommonOAuthClientProvider;
+use RonteLtd\OAuthClientLib\CommonOAuth2HttpClientBuilder;
 use RonteLtd\OAuthClientLib\HttpClientBuilder;
 use RonteLtd\OAuthClientLib\Model\Client;
 use RonteLtd\OAuthClientLib\Model\Token;
 use RonteLtd\OAuthClientLib\OAuth2Storage;
 
-class CommonOAuthClientProviderTest extends TestCase
+class CommonOAuth2HttpClientBuilderTest extends TestCase
 {
     public function testTokenFromStorage()
     {
@@ -460,7 +460,7 @@ class CommonOAuthClientProviderTest extends TestCase
 
         $client->expects($this->exactly(2))
             ->method('getAuthContentType')
-            ->will($this->returnValue(CommonOAuthClientProvider::CONTENT_TYPE_JSON));
+            ->will($this->returnValue(CommonOAuth2HttpClientBuilder::CONTENT_TYPE_JSON));
 
         $client->expects($this->once())
             ->method('getAuthUrl')
@@ -562,14 +562,14 @@ class CommonOAuthClientProviderTest extends TestCase
 
     private function resultAsserts($apiRequestStorage, $storage, $clientBuilder, $req, $resp)
     {
-        $clientProvider = new CommonOAuthClientProvider(
+        $clientProvider = new CommonOAuth2HttpClientBuilder(
             $apiRequestStorage,
             $storage,
             $clientBuilder
         );
 
         $client = $clientProvider->setApi('Test Api Key')
-            ->provideClient();
+            ->getClient();
 
         $newResp = $client->send($req);
         $this->assertEquals($resp, $newResp);

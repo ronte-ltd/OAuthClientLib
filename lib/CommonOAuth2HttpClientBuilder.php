@@ -12,7 +12,7 @@ use RonteLtd\OAuthClientLib\Exception\ClientException;
 use RonteLtd\OAuthClientLib\Exception\WrongClientException;
 use RonteLtd\OAuthClientLib\Model\Token;
 
-class CommonOAuthClientProvider implements OAuthClientProvider
+class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
 {
     const GUZZLE_CLIENT_HANDLER_CONFIG = 'handler';
     const CONFIG_MAX_RETRYS = 'config-max-retrys';
@@ -57,7 +57,7 @@ class CommonOAuthClientProvider implements OAuthClientProvider
     /**
      * {@inheritdoc}
      */
-    public function provideClient(ClientInterface $httpClient = null): ClientInterface
+    public function getClient(ClientInterface $httpClient = null): ClientInterface
     {
         $currentApiKey = $this->currentApiKey;
 

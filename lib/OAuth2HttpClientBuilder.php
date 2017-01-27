@@ -4,7 +4,7 @@ namespace RonteLtd\OAuthClientLib;
 
 use GuzzleHttp\ClientInterface;
 
-interface OAuthClientProvider
+interface OAuth2HttpClientBuilder extends HttpClientBuilder
 {
     /**
      * Set api to get access token from.
@@ -14,14 +14,4 @@ interface OAuthClientProvider
      * @throws \LogicException if no information about api found by key.
      */
     public function setApi($apiKey);
-
-    /**
-     * Returns access token for API.
-     *
-     * @param Client|null $httpClient Base http client to "upgrade"
-     *
-     * @return Client $accessToken
-     * @throws OAuthClientException
-     */
-    public function provideClient(ClientInterface $httpClient = null): ClientInterface;
 }
