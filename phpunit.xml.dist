@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         bootstrap="vendor/autoload.php"
+>
+  <testsuites>
+    <testsuite name="oauth2-client-lib Test Suite">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist>
+      <directory suffix=".php">./lib/</directory>
+      <exclude>
+        <file>./lib/CommonHttpClientBuilder.php</file>
+        <file>./lib/Provider/CommonTimeProvider.php</file>
+        <file>./lib/Model/CommonClient.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
+
+  <!--<logging>-->
+    <!--<log type="coverage-text" target="php://stdout" showOnlySummary="true" />-->
+    <!--<log type="coverage-html" target="./tmp/report" lowUpperBound="35"-->
+         <!--highLowerBound="70"/>-->
+  <!--</logging>-->
+</phpunit>
