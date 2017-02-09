@@ -3,9 +3,8 @@
 namespace RonteLtd\OAuthClientLib;
 
 use RonteLtd\OAuthClientLib\Model\Token;
-use RonteLtd\OAuthClientLib\Model\Client;
 
-interface OAuth2Storage
+interface TokenStorage
 {
     /**
      * Removes token by key if exists.
@@ -24,15 +23,6 @@ interface OAuth2Storage
      * @return Token|null
      */
     public function getToken($key);
-
-    /**
-     * Gets client by key if exists.
-     *
-     * @param mixed $key
-     *
-     * @return Client|null
-     */
-    public function getClient($key);
 
     /**
      * Stores token  by key.

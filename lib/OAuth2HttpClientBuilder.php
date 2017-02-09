@@ -2,8 +2,6 @@
 
 namespace RonteLtd\OAuthClientLib;
 
-use GuzzleHttp\ClientInterface;
-
 interface OAuth2HttpClientBuilder extends HttpClientBuilder
 {
     /**

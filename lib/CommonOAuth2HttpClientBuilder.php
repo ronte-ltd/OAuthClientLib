@@ -10,9 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 use RonteLtd\OAuthClientLib\Exception\ClientNotFoundException;
 use RonteLtd\OAuthClientLib\Exception\ClientException;
 use RonteLtd\OAuthClientLib\Exception\WrongClientException;
+use RonteLtd\OAuthClientLib\Model\Client;
 use RonteLtd\OAuthClientLib\Model\Token;
 
-class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
+class CommonOAuth2HttpClientBuilder implements ConfigurableOAuth2HttpClientBuilder
 {
     const GUZZLE_CLIENT_HANDLER_CONFIG = 'handler';
     const CONFIG_MAX_RETRYS = 'config-max-retrys';
@@ -26,18 +27,22 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
     ];
 
     private $requestStorage;
-    private $storage;
+    private $clientStorage;
+    private $tokenStorage;
     private $clientBuilder;
     private $currentApiKey;
+    private $client;
 
     public function __construct(
-        ApiRequestStorage $requestStorage,
-        OAuth2Storage $storage,
-        HttpClientBuilder $clientBuilder,
+        ?ApiRequestStorage $requestStorage,
+        ?TokenStorage $tokenStorage,
+        ?ClientStorage $clientStorage,
+        ?HttpClientBuilder $clientBuilder,
         array $config = []
     ) {
         $this->requestStorage = $requestStorage;
-        $this->storage = $storage;
+        $this->tokenStorage = $tokenStorage;
+        $this->clientStorage = $clientStorage;
         $this->clientBuilder = $clientBuilder;
         $this->setDefaultOptions();
         foreach ($config as $name => $value) {
@@ -57,9 +62,37 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
     /**
      * {@inheritdoc}
      */
+    public function setApiKey($apiKey)
+    {
+        $this->currentApiKey = $apiKey;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getClient(ClientInterface $httpClient = null): ClientInterface
     {
         $currentApiKey = $this->currentApiKey;
+
+        if ($this->client) {
+            $currentClient = $this->client;
+        } elseif ($this->clientStorage) {
+            $currentClient = $this->clientStorage->getClient($currentApiKey);
+        } else {
+            $currentClient = null;
+        }
+        if (!$currentClient) {
+            throw new ClientNotFoundException();
+        }
 
         if (!$httpClient) {
             $httpClient = $this->clientBuilder->getClient();
@@ -67,10 +100,10 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
 
         $httpClient->getConfig(self::GUZZLE_CLIENT_HANDLER_CONFIG)
             ->push(
-                Middleware::mapRequest(function (RequestInterface $r) use ($currentApiKey) {
+                Middleware::mapRequest(function (RequestInterface $r) use ($currentApiKey, $currentClient) {
                     $this->requestStorage->push($currentApiKey, $r);
                     if (!$r->hasHeader('Authorization')) {
-                        $token = $this->getToken($currentApiKey);
+                        $token = $this->getToken($currentApiKey, $currentClient);
                         $r = $r->withHeader('Authorization', 'Bearer ' . $token->getAccessToken());
                     }
                     return $r;
@@ -78,14 +111,14 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
             );
         $httpClient->getConfig(self::GUZZLE_CLIENT_HANDLER_CONFIG)
             ->push(
-                Middleware::mapResponse(function (ResponseInterface $r) use ($currentApiKey, $httpClient) {
+                Middleware::mapResponse(function (ResponseInterface $r) use ($currentApiKey, $currentClient, $httpClient) {
                     if (
                         $r->getStatusCode() == 401
                         && $this->requestStorage->getCount($currentApiKey) < $this->config[self::CONFIG_MAX_RETRYS]
                     ) {
                         try {
                             $token = $this->flushToken($currentApiKey)
-                                ->getToken($currentApiKey);
+                                ->getToken($currentApiKey, $currentClient);
                         } catch (OAuthClientException $e) {
                             return $r;
                         }
@@ -113,20 +146,22 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
 
     private function flushToken($currentApiKey)
     {
-        $this->storage->removeToken($currentApiKey);
+        if ($this->tokenStorage) {
+            $this->tokenStorage->removeToken($currentApiKey);
+        }
         return $this;
     }
 
-    private function getToken($currentApiKey)
+    private function getToken($currentApiKey, Client $client)
     {
-        $token = $this->storage->getToken($currentApiKey);
+        if ($this->tokenStorage) {
+            $token = $this->tokenStorage->getToken($currentApiKey);
+        } else {
+            $token = null;
+        }
         if (!$token || $token->hasExpired()) {
             if ($token) {
               $this->flushToken($currentApiKey);
-            }
-            $client = $this->storage->getClient($currentApiKey);
-            if (!$client) {
-                throw new ClientNotFoundException();
             }
             $httpClient = $this->clientBuilder->getClient();
             if (empty(self::CONTENT_TYPE_MAP[$client->getAuthContentType()])) {
@@ -153,8 +188,10 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
                 throw new ClientException($e->getMessage(), $e->getCode(), $e);
             }
 
-            $token = $this->buildToken((string)$resp->getBody());
-            $this->storage->putToken($currentApiKey, $token);
+            if ($this->tokenStorage) {
+                $token = $this->buildToken((string)$resp->getBody());
+                $this->tokenStorage->putToken($currentApiKey, $token);
+            }
         }
 
         return $token;
@@ -167,7 +204,7 @@ class CommonOAuth2HttpClientBuilder implements OAuth2HttpClientBuilder
             throw new ClientException('Unexpected response: ' . $rowData);
         }
 
-        $token = $this->storage->createToken();
+        $token = $this->tokenStorage->createToken();
         $token->setAccessToken($data['access_token']);
         $token->setExpiresIn($data['expires_in']);
         return $token;

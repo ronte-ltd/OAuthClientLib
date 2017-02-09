@@ -10,8 +10,8 @@ class CommonHttpClientBuilder implements HttpClientBuilder
     /**
      * {@inheritdoc}
      */
-    public function getClient(): ClientInterface
+    public function getClient(ClientInterface $baseClient = null): ClientInterface
     {
-        return new Client();
+        return $baseClient ?: new Client();
     }
 }

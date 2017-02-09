@@ -5,7 +5,6 @@ namespace RonteLtd\OAuthClientLib\Tests;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +14,8 @@ use RonteLtd\OAuthClientLib\CommonOAuth2HttpClientBuilder;
 use RonteLtd\OAuthClientLib\HttpClientBuilder;
 use RonteLtd\OAuthClientLib\Model\Client;
 use RonteLtd\OAuthClientLib\Model\Token;
-use RonteLtd\OAuthClientLib\OAuth2Storage;
+use RonteLtd\OAuthClientLib\ClientStorage;
+use RonteLtd\OAuthClientLib\TokenStorage;
 
 class CommonOAuth2HttpClientBuilderTest extends TestCase
 {
@@ -35,21 +35,34 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
         /**********
          * Client *
          *********/
+        $client = $this->getMockBuilder(Client::class)
+            ->setMethods(['getAuthContentType', 'getAuthUrl', 'getConsumerKey', 'getConsumerSecret'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client->expects($this->exactly(0))->method('getAuthContentType');
+        $client->expects($this->exactly(0))->method('getAuthUrl');
+        $client->expects($this->exactly(0))->method('getConsumerKey');
+        $client->expects($this->exactly(0))->method('getConsumerSecret');
 
         /*****************
          * OAuth storage *
          ****************/
-        $storage = $this->getMockOAuthStorage();
+        $oauthTokenStorage = $this->getMockOAuthTokenStorage();
 
-        $storage->expects($this->once())
+        $oauthTokenStorage->expects($this->once())
             ->method('getToken')
             ->with('Test Api Key')
             ->will($this->returnValue($token));
 
-        $storage->expects($this->exactly(0))->method('removeToken');
-        $storage->expects($this->exactly(0))->method('getClient');
-        $storage->expects($this->exactly(0))->method('putToken');
-        $storage->expects($this->exactly(0))->method('createToken');
+        $oauthTokenStorage->expects($this->exactly(0))->method('removeToken');
+        $oauthTokenStorage->expects($this->exactly(0))->method('putToken');
+        $oauthTokenStorage->expects($this->exactly(0))->method('createToken');
+
+        $oauthClientStorage = $this->getMockOAuthClientStorage();
+        $oauthClientStorage->expects($this->once())
+          ->method('getClient')
+          ->will($this->returnValue($client));
 
         /**********************
          * Result http client *
@@ -91,7 +104,8 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
          *******/
         $this->resultAsserts(
             $apiRequestStorage,
-            $storage,
+            $oauthClientStorage,
+            $oauthTokenStorage,
             $clientBuilder,
             $request,
             $response
@@ -113,25 +127,26 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
         /*****************
          * OAuth storage *
          ****************/
-        $storage = $this->getMockOAuthStorage();
+        $tokenStorage = $this->getMockOAuthTokenStorage();
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('getToken')
             ->with('Test Api Key');
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('putToken')
             ->with('Test Api Key', $token);
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('createToken')
             ->will($this->returnValue($token));
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->exactly(0))->method('removeToken');
+
+        $clientStorage = $this->getMockOAuthClientStorage();
+        $clientStorage->expects($this->once())
             ->method('getClient')
             ->will($this->returnValue($client));
-
-        $storage->expects($this->exactly(0))->method('removeToken');
 
         /**********************
          * Result http client *
@@ -179,7 +194,8 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
          *******/
         $this->resultAsserts(
             $apiRequestStorage,
-            $storage,
+            $clientStorage,
+            $tokenStorage,
             $clientBuilder,
             $request,
             $resultResponse
@@ -210,28 +226,29 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
         /*****************
          * OAuth storage *
          ****************/
-        $storage = $this->getMockOAuthStorage();
+        $tokenStorage = $this->getMockOAuthTokenStorage();
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('getToken')
             ->with('Test Api Key')
             ->will($this->returnValue($tokenFromStorage));
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('putToken')
             ->with('Test Api Key', $tokenFromService);
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('createToken')
             ->will($this->returnValue($tokenFromService));
 
-        $storage->expects($this->once())
-            ->method('getClient')
-            ->will($this->returnValue($client));
-
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('removeToken')
             ->with('Test Api Key');
+
+        $clientStorage = $this->getMockOAuthClientStorage();
+        $clientStorage->expects($this->once())
+            ->method('getClient')
+            ->will($this->returnValue($client));
 
         /**********************
          * Result http client *
@@ -279,7 +296,8 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
          *******/
         $this->resultAsserts(
             $apiRequestStorage,
-            $storage,
+            $clientStorage,
+            $tokenStorage,
             $clientBuilder,
             $request,
             $resultResponse
@@ -312,32 +330,33 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
         /*****************
          * OAuth storage *
          ****************/
-        $storage = $this->getMockOAuthStorage();
+        $tokenStorage = $this->getMockOAuthTokenStorage();
 
-        $storage->expects($this->at(0))
+        $tokenStorage->expects($this->at(0))
             ->method('getToken')
             ->with('Test Api Key')
             ->will($this->returnValue($tokenFromStorage));
 
-        $storage->expects($this->at(2))
+        $tokenStorage->expects($this->at(2))
             ->method('getToken')
             ->with('Test Api Key');
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('putToken')
             ->with('Test Api Key', $tokenFromService);
 
-        $storage->expects($this->once())
-            ->method('getClient')
-            ->will($this->returnValue($client));
-
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('removeToken')
             ->with('Test Api Key');
 
-        $storage->expects($this->once())
+        $tokenStorage->expects($this->once())
             ->method('createToken')
             ->will($this->returnValue($tokenFromService));
+
+        $clientStorage = $this->getMockOAuthClientStorage();
+        $clientStorage->expects($this->once())
+            ->method('getClient')
+            ->will($this->returnValue($client));
 
         /**********************
          * Result http client *
@@ -412,7 +431,8 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
          *******/
         $this->resultAsserts(
             $apiRequestStorage,
-            $storage,
+            $clientStorage,
+            $tokenStorage,
             $clientBuilder,
             $request0,
             $resultResponse
@@ -477,10 +497,18 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
         return $client;
     }
 
-    private function getMockOAuthStorage()
+    private function getMockOAuthClientStorage()
     {
-        return $this->getMockBuilder(OAuth2Storage::class)
-            ->setMethods(['getToken', 'removeToken', 'getClient', 'putToken', 'createToken'])
+        return $this->getMockBuilder(ClientStorage::class)
+            ->setMethods(['getClient'])
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getMockOAuthTokenStorage()
+    {
+        return $this->getMockBuilder(TokenStorage::class)
+            ->setMethods(['getToken', 'removeToken', 'putToken', 'createToken'])
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -560,11 +588,12 @@ class CommonOAuth2HttpClientBuilderTest extends TestCase
             ->getMock();
     }
 
-    private function resultAsserts($apiRequestStorage, $storage, $clientBuilder, $req, $resp)
+    private function resultAsserts($apiRequestStorage, $clientStorage, $tokenStorage, $clientBuilder, $req, $resp)
     {
         $clientProvider = new CommonOAuth2HttpClientBuilder(
             $apiRequestStorage,
-            $storage,
+            $tokenStorage,
+            $clientStorage,
             $clientBuilder
         );
 
