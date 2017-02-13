@@ -10,6 +10,21 @@ class CommonToken implements Token
     private $accessToken;
     private $expiresAt;
 
+    public static function __set_state(array $properties)
+    {
+        if (isSet($properties['timeProvider'])) {
+            $prop = new CommonToken($properties['timeProvider']);
+            if (isSet($properties['accessToken'])) {
+                $prop->accessToken = $properties['accessToken'];
+            }
+            if (isSet($properties['expiresAt'])) {
+                $prop->expiresAt = $properties['expiresAt'];
+            }
+            return $prop;
+        }
+        return null;
+    }
+
     public function __construct(TimeProvider $timeProvider)
     {
         $this->timeProvider = $timeProvider;
