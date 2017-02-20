@@ -19,6 +19,18 @@ class CommonToken implements Token
      * {@inheritdoc}
      * @codeCoverageIgnore
      */
+    public function __set_state(array $properties)
+    {
+        $obj =  new self($properties['timeProvider']);
+        $obj->accessToken = $properties['accessToken'];
+        $obj->expiresAt = $properties['expiresAt'];
+        return $obj;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
     public function setAccessToken(string $token)
     {
         $this->accessToken = $token;
