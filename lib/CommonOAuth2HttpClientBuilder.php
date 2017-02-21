@@ -5,6 +5,7 @@ namespace RonteLtd\OAuthClientLib;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RonteLtd\OAuthClientLib\Exception\ClientNotFoundException;
@@ -22,9 +23,11 @@ class CommonOAuth2HttpClientBuilder implements ConfigurableOAuth2HttpClientBuild
     const CONTENT_TYPE_FORM = 'form';
     const CONTENT_TYPE_JSON = 'json';
     const CONTENT_TYPE_MAP = [
-        self::CONTENT_TYPE_FORM => 'grant_type=client_credentials',
-        self::CONTENT_TYPE_JSON => '{"grant_type":"client_credentials"}',
+        self::CONTENT_TYPE_FORM => RequestOptions::FORM_PARAMS,
+        self::CONTENT_TYPE_JSON => RequestOptions::JSON,
     ];
+
+    const GRANT = ['grant_type' => 'client_credentials'];
 
     private $requestStorage;
     private $clientStorage;
@@ -176,7 +179,7 @@ class CommonOAuth2HttpClientBuilder implements ConfigurableOAuth2HttpClientBuild
                 $resp = $httpClient->post(
                     $client->getAuthUrl(),
                     [
-                        'body' => self::CONTENT_TYPE_MAP[$client->getAuthContentType()],
+                        self::CONTENT_TYPE_MAP[$client->getAuthContentType()] => self::GRANT,
                         'auth' => [
                             $client->getConsumerKey(),
                             $client->getConsumerSecret()
