@@ -15,14 +15,6 @@ class CommonTimeProvider implements TimeProvider
     /**
      * {@inheritdoc}
      */
-    public static function __set_state(array $properties)
-    {
-        return new self();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getTimestamp(): int
     {
         return time();
