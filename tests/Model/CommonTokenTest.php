@@ -3,6 +3,7 @@
 namespace RonteLtd\OAuthClientLib\Tests\Model;
 
 use RonteLtd\OAuthClientLib\Model\CommonToken;
+use RonteLtd\OAuthClientLib\Provider\CommonTimeProvider;
 use RonteLtd\OAuthClientLib\Provider\TimeProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -32,5 +33,12 @@ class CommonTokenTest extends TestCase
 
         $this->assertFalse($client->hasExpired());
         $this->assertTrue($client->hasExpired());
+    }
+
+    public function testSetState()
+    {
+        $expectedToken = new CommonToken(new CommonTimeProvider());
+        eval('$actualToken = ' . var_export($expectedToken, true));
+        $this->assertEquals($expectedToken, $actualToken);
     }
 }
